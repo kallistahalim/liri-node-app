@@ -1,3 +1,7 @@
+
+require("dotenv").config();
+var keys = require("./keys.js")
+
 var nodeArgsTwo = process.argv[2];
 
 if (nodeArgsTwo === "concert-this") {
@@ -15,10 +19,8 @@ if (nodeArgsTwo === "concert-this") {
 function spotify(){
 var Spotify = require('node-spotify-api');
 
-var spotify = new Spotify({
-    id: "645d5f03d0394cdf8d9355b97ac34a25",
-    secret: "162bc567cd9c44518b3d1f11f5e455ef"
-});
+
+var spotify = new Spotify(keys.spotify);
 
 
 var nodeArgs = process.argv;
@@ -35,14 +37,15 @@ for (var i = 3; i < nodeArgs.length; i++) {
     }
 }
 
+if(!songTitle){
+    songTitle = "The sign"
+}
 spotify.search({
     type: "track",
     query: songTitle
 }, function (err, response) {
     if (err) {
-        // return console.log('Error occurred: ' + err);
-        var songTitle = "The Sign";
-
+        return console.log('Error occurred: ' + err);
     } else {
         // console.log(response.tracks);
 
@@ -73,7 +76,7 @@ spotify.search({
 
 function OMDB(){
 var request = require('request');
-var omdb_key = "aedcc6c4";
+var omdb_key = process.env.key;
 
 var nodeArgs1 = process.argv;
 
@@ -87,6 +90,10 @@ for (var i = 3; i < nodeArgs1.length; i++) {
         movieTitle += nodeArgs1[i];
 
     }
+}
+
+if(!movieTitle){
+    movieTitle = "Mr. Nobody"
 }
 
 request("http://www.omdbapi.com/?apikey=" + omdb_key + "&t=" + movieTitle, function (error, response, body) {
@@ -114,10 +121,7 @@ request("http://www.omdbapi.com/?apikey=" + omdb_key + "&t=" + movieTitle, funct
         //     * Actors in the movie.
         console.log(JSON.parse(body).Actors);
 
-    } else {
-        movieTitle = "Mr. Nobody";
-
-    }
+    } 
 });
 }
 
@@ -149,7 +153,7 @@ for (var i = 3; i < nodeArgs2.length; i++) {
 
 
 
-axios.get("https://rest.bandsintown.com/artists/" + bandTitle + "/events?app_id=31b744e503fc43636c51d6c0301b1bba").then(
+axios.get("https://rest.bandsintown.com/artists/" + bandTitle + "/events?app_id=" + process.env.BandsAPIKey).then(
     function (response) {
         // console.log(response.data);
 
